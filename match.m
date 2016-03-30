@@ -116,51 +116,16 @@ end
 % --- Executes on button press in solve.
 function solve_Callback(hObject, eventdata, handles)
 val = get(handles.pop1,'Value');
-freq = str2value(get(handles.freq,'String'));
-RL = str2value(get(handles.res_load,'String'));
-Req = str2value(get(handles.res_equ,'String'));
 switch val
     case 1
-        if Req <= RL
-            w = 2*pi*freq;
-            L1 = Req*sqrt(RL/Req-1)/w;
-            C1 = sqrt(RL/Req-1)/(w*RL);
-            Hv = sqrt(RL/Req);
-        else
-            L1 = 0;
-            C1 = 0;
-            Hv = 1;
-        end
+        boost(handles);
     case 2
-        if Req >= RL
-            w = 2*pi*freq;
-            L1 = RL*sqrt(Req/RL-1)/w;
-            C1 = L1/(Req*RL);
-            Hv = sqrt(RL/Req);
-            set(handles.res_equ,'String',num2str(L1/(RL*C1)));
-        else
-            L1 = 0;
-            C1 = 0;
-            Hv = 1;
-        end
+        buck(handles);
     case 3
-        w = 2*pi*freq;
-        L1 = sqrt(RL*Req)/w;
-        C1 = 1/(sqrt(RL*Req)*w);
-        Hv = sqrt(RL/Req);
+        T_xing(handles);
     case 4
-        w = 2*pi*freq;
-        L1 = sqrt(RL*Req)/w;
-        C1 = 1/(sqrt(RL*Req)*w);
-        Hv = sqrt(RL/Req);
-    otherwise
-        L1 = 0;
-        C1 = 0;
-        Hv = 1;
+        Pi_xing(handles);
 end
-set(handles.ind1,'String',num2str(L1*1e3));
-set(handles.cap1,'String',num2str(C1*1e12));
-set(handles.Hvol,'String',num2str(Hv));
 
 function value = str2value(str)
 strformat = '%f%c';
@@ -216,3 +181,97 @@ function pop1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+function boost(handles)
+freq = str2value(get(handles.freq,'String'));
+RL = str2value(get(handles.res_load,'String'));
+Req = str2value(get(handles.res_equ,'String'));
+if Req <= RL
+    w = 2*pi*freq;
+    L1 = Req*sqrt(RL/Req-1)/w;
+    C1 = sqrt(RL/Req-1)/(w*RL);
+    Hv = sqrt(RL/Req);
+else
+    L1 = 0;
+    C1 = 0;
+    Hv = 1;
+end
+set(handles.ind1,'String',num2str(L1*1e3));
+set(handles.cap1,'String',num2str(C1*1e12));
+set(handles.Hvol,'String',num2str(Hv));
+
+w_start = floor(log10(freq)/2);
+w_end = ceil(log10(freq))+2;
+f = logspace(w_start,w_end,200);
+wc = 2*pi.*f;
+H = RL./(RL+1j*L1.*wc-wc.^2.*RL.*L1.*C1);
+axes(handles.ampf);
+semilogx(f,20.*log10(abs(H)),'Linewidth',2,'Color','b');
+grid on;
+xlabel('f/Hz');
+ylabel('20*lg|Hv|/dB');
+axes(handles.phf);
+semilogx(f,angle(H).*180./pi,'Linewidth',2,'Color','r');
+grid on;
+xlabel('f/Hz');
+ylabel('¦Õ_{L}');
+
+
+function buck(handles)
+freq = str2value(get(handles.freq,'String'));
+RL = str2value(get(handles.res_load,'String'));
+Req = str2value(get(handles.res_equ,'String'));
+if Req >= RL
+w = 2*pi*freq;
+L1 = RL*sqrt(Req/RL-1)/w;
+C1 = L1/(Req*RL);
+Hv = sqrt(RL/Req);
+set(handles.res_equ,'String',num2str(L1/(RL*C1)));
+else
+L1 = 0;
+C1 = 0;
+Hv = 1;
+end
+set(handles.ind1,'String',num2str(L1*1e3));
+set(handles.cap1,'String',num2str(C1*1e12));
+set(handles.Hvol,'String',num2str(Hv));
+
+w_start = floor(log10(freq)/2);
+w_end = ceil(log10(freq))+2;
+f = logspace(w_start,w_end,200);
+wc = 2*pi.*f;
+H = RL./(1j.*wc.*L1+RL);
+axes(handles.ampf);
+semilogx(f,20.*log10(abs(H)),'Linewidth',2,'Color','b');
+grid on;
+xlabel('f/Hz');
+ylabel('20*lg|Hv|/dB');
+axes(handles.phf);
+semilogx(f,angle(H).*180./pi,'Linewidth',2,'Color','r');
+grid on;
+xlabel('f/Hz');
+ylabel('¦Õ_{L}');
+
+function T_xing(handles)
+freq = str2value(get(handles.freq,'String'));
+RL = str2value(get(handles.res_load,'String'));
+Req = str2value(get(handles.res_equ,'String'));
+w = 2*pi*freq;
+L1 = sqrt(RL*Req)/w;
+C1 = 1/(sqrt(RL*Req)*w);
+Hv = sqrt(RL/Req);
+set(handles.ind1,'String',num2str(L1*1e3));
+set(handles.cap1,'String',num2str(C1*1e12));
+set(handles.Hvol,'String',num2str(Hv));
+
+function Pi_xing(handles)
+freq = str2value(get(handles.freq,'String'));
+RL = str2value(get(handles.res_load,'String'));
+Req = str2value(get(handles.res_equ,'String'));
+w = 2*pi*freq;
+L1 = sqrt(RL*Req)/w;
+C1 = 1/(sqrt(RL*Req)*w);
+Hv = sqrt(RL/Req);
+set(handles.ind1,'String',num2str(L1*1e3));
+set(handles.cap1,'String',num2str(C1*1e12));
+set(handles.Hvol,'String',num2str(Hv));
