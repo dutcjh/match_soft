@@ -264,6 +264,22 @@ set(handles.ind1,'String',num2str(L1*1e3));
 set(handles.cap1,'String',num2str(C1*1e12));
 set(handles.Hvol,'String',num2str(Hv));
 
+w_start = floor(log10(freq)/2);
+w_end = ceil(log10(freq))+2;
+f = logspace(w_start,w_end,200);
+wc = 2*pi.*f;
+H = RL./(-1j.*wc.^3.*L1.^2*C1-wc.^2.*RL.*C1.*L1+2j.*wc.*L1+RL);
+axes(handles.ampf);
+semilogx(f,20.*log10(abs(H)),'Linewidth',2,'Color','b');
+grid on;
+xlabel('f/Hz');
+ylabel('20*lg|Hv|/dB');
+axes(handles.phf);
+semilogx(f,angle(H).*180./pi,'Linewidth',2,'Color','r');
+grid on;
+xlabel('f/Hz');
+ylabel('¦Õ_{L}');
+
 function Pi_xing(handles)
 freq = str2value(get(handles.freq,'String'));
 RL = str2value(get(handles.res_load,'String'));
@@ -275,3 +291,19 @@ Hv = sqrt(RL/Req);
 set(handles.ind1,'String',num2str(L1*1e3));
 set(handles.cap1,'String',num2str(C1*1e12));
 set(handles.Hvol,'String',num2str(Hv));
+
+w_start = floor(log10(freq)/2);
+w_end = ceil(log10(freq))+2;
+f = logspace(w_start,w_end,200);
+wc = 2*pi.*f;
+H = RL./(RL+1j*L1.*wc-wc.^2.*RL.*L1.*C1);
+axes(handles.ampf);
+semilogx(f,20.*log10(abs(H)),'Linewidth',2,'Color','b');
+grid on;
+xlabel('f/Hz');
+ylabel('20*lg|Hv|/dB');
+axes(handles.phf);
+semilogx(f,angle(H).*180./pi,'Linewidth',2,'Color','r');
+grid on;
+xlabel('f/Hz');
+ylabel('¦Õ_{L}');
