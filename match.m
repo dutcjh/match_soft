@@ -61,6 +61,7 @@ end
 
 
 function res_load_Callback(hObject, eventdata, handles)
+set(handles.note1,'String','');
 str = get(hObject,'String');
 value = str2value(str);
 if value < 0 % 判断输入是否有效 无效输入
@@ -97,6 +98,7 @@ end
 
 
 function ind1_Callback(hObject, eventdata, handles)
+set(handles.note1,'String','');
 str = get(hObject,'String');
 value = str2value(str);
 if value < 0 % 判断输入是否有效 无效输入
@@ -116,6 +118,7 @@ end
 
 
 function cap1_Callback(hObject, eventdata, handles)
+set(handles.note1,'String','');
 str = get(hObject,'String');
 value = str2value(str);
 if value < 0 % 判断输入是否有效 无效输入
@@ -133,6 +136,7 @@ end
 
 
 function Hvol_Callback(hObject, eventdata, handles)
+set(handles.note0,'String','');
 str = get(hObject,'String');
 value = str2value(str);
 if value < 0 % 判断输入是否有效 无效输入
@@ -151,6 +155,7 @@ end
 
 % --- Executes on button press in solve.
 function solve_Callback(hObject, eventdata, handles)
+set(handles.note1,'String','');
 val = get(handles.pop1,'Value');
 switch val
     case 1
@@ -192,6 +197,8 @@ end
 
 % --- Executes on selection change in pop1.
 function pop1_Callback(hObject, eventdata, handles)
+set(handles.note0,'String','');
+set(handles.note1,'String','');
 val = get(hObject,'Value');
 axes(handles.circuit);%用axes命令设定当前操作的坐标轴是axes_topo
 switch val
@@ -229,6 +236,7 @@ if flag == 1
         L1 = Req*sqrt(RL/Req-1)/w;
         C1 = sqrt(RL/Req-1)/(w*RL);
     else
+        set(handles.note0,'String','Hv应大于1');
         L1 = 0;
         C1 = 0;
     end
@@ -245,6 +253,7 @@ else
         Hv = sqrt((w*RL*C1)^2+1);
         Req = RL/((w*RL*C1)^2+1);
     else 
+        set(handles.note1,'String','参数错误!');
         freq = 0;
         Hv = 1;
         Req =0;
@@ -282,6 +291,7 @@ if flag == 1
         L1 = RL*sqrt(Req/RL-1)/w;
         C1 = L1/(Req*RL);
     else
+        set(handles.note0,'String','Hv应小于1');
         L1 = 0;
         C1 = 0;
     end
@@ -298,6 +308,7 @@ else
         Hv = RL*sqrt(C1/L1);
         Req = L1/(RL*C1);
     else
+        set(handles.note1,'String','参数错误!');
         freq = 0;
         Hv = 1;
         Req =0;
@@ -411,6 +422,7 @@ ylabel('φ_{L}');
 
 % --- Executes on button press in resolve.
 function resolve_Callback(hObject, eventdata, handles)
+set(handles.note0,'String','');
 val = get(handles.pop1,'Value');
 switch val
     case 1
@@ -422,3 +434,8 @@ switch val
     case 4
         Pi_xing(handles,2);
 end
+
+
+% --- Executes on button press in quit.
+function quit_Callback(hObject, eventdata, handles)
+close(handles.match);
