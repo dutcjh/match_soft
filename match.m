@@ -1,3 +1,10 @@
+%% 阻抗匹配助手
+% 陈建辉
+% 版本： 2016-4-1 v0.3.0 基本完成
+%       2016-3-31 v0.2.0 添加幅频特性和相频特性，完善正解和反解
+%       2016-3-29 v0.1.0 完成基本功能
+%
+%% 函数初始化
 function varargout = match(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -22,12 +29,11 @@ end
 function match_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
-% Update handles structure
 guidata(hObject, handles);
 
-axes(handles.circuit);%用axes命令设定当前操作的坐标轴是axes_topo
+axes(handles.circuit);%用axes命令设定当前操作的坐标轴是circuit
 img_src=imread('image/boost.png'); %读取图片1
-imshow(double(img_src)./255);%用imread读入图片，并用imshow在axes_topo上显示
+imshow(double(img_src)./255);%用imread读入图片，并用imshow在circuit上显示
 setappdata(handles.match,'Freq','400k');
 setappdata(handles.match,'RL','3300');
 setappdata(handles.match,'Req','330k');
@@ -35,10 +41,8 @@ setappdata(handles.match,'Ind','10m');
 setappdata(handles.match,'Cap','12u');
 setappdata(handles.match,'Hvg','10');
 
-% --- Outputs from this function are returned to the command line.
 function varargout = match_OutputFcn(hObject, eventdata, handles) 
 varargout{1} = handles.output;
-
 
 
 function freq_Callback(hObject, eventdata, handles)
@@ -50,8 +54,6 @@ if value < 0 % 判断输入是否有效 无效输入
 else
     setappdata(handles.match,'Freq',str);
 end
-
-
 
 % --- Executes during object creation, after setting all properties.
 function freq_CreateFcn(hObject, eventdata, handles)
@@ -152,7 +154,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on button press in solve.
 function solve_Callback(hObject, eventdata, handles)
 set(handles.note1,'String','');
@@ -204,19 +205,19 @@ axes(handles.circuit);%用axes命令设定当前操作的坐标轴是axes_topo
 switch val
     case 1
         img_src=imread('image/boost.png'); %读取图片1
-        imshow(double(img_src)./255);%用imread读入图片，并用imshow在axes_topo上显示
+        imshow(double(img_src)./255);%用imread读入图片，并用imshow在circuit上显示
     case 2;
-        img_src=imread('image/buck.png'); %读取图片1
-        imshow(double(img_src)./255);%用imread读入图片，并用imshow在axes_topo上显示
+        img_src=imread('image/buck.png'); %读取图片2
+        imshow(double(img_src)./255);%用imread读入图片，并用imshow在circuit上显示
     case 3
         img_src=imread('image/T_xing.png'); %读取图片3
-        imshow(double(img_src)./255);%用imread读入图片，并用imshow在axes_topo上显示
+        imshow(double(img_src)./255);%用imread读入图片，并用imshow在circuit上显示
     case 4
-        img_src=imread('image/Pi_xing.png'); %读取图片3
-        imshow(double(img_src)./255);%用imread读入图片，并用imshow在axes_topo上显示
+        img_src=imread('image/Pi_xing.png'); %读取图片4
+        imshow(double(img_src)./255);%用imread读入图片，并用imshow在circuit上显示
     otherwise
         img_src=imread('image/boost.png'); %读取图片1
-        imshow(double(img_src)./255);%用imread读入图片，并用imshow在axes_topo上显示
+        imshow(double(img_src)./255);%用imread读入图片，并用imshow在circuit上显示
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -419,7 +420,6 @@ grid on;
 xlabel('f/Hz');
 ylabel('φ_{L}');
 
-
 % --- Executes on button press in resolve.
 function resolve_Callback(hObject, eventdata, handles)
 set(handles.note0,'String','');
@@ -434,7 +434,6 @@ switch val
     case 4
         Pi_xing(handles,2);
 end
-
 
 % --- Executes on button press in quit.
 function quit_Callback(hObject, eventdata, handles)
